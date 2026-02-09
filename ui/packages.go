@@ -21,6 +21,11 @@ func (m Model) updatePackages(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			if len(m.packages) > 0 {
 				m.selectedPkg = &m.packages[m.packageCursor]
+				// Reset filter state for new package
+				m.filterValue = ""
+				m.filterInput.SetValue("")
+				m.selectedVersions = make(map[int]struct{})
+				m.versionCursor = 0
 				m.loading = true
 				m.loadingMsg = "Loading versions..."
 				return m, tea.Batch(
