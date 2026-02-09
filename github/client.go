@@ -49,7 +49,7 @@ func (c *Client) doRequest(method, path string) ([]byte, error) {
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
+		return nil, parseAPIError(resp.StatusCode, body)
 	}
 
 	return body, nil
@@ -98,4 +98,39 @@ func (c *Client) DeletePackageVersion(packageType, packageName string, versionID
 func (c *Client) ValidateToken() error {
 	_, err := c.doRequest("GET", "/user")
 	return err
+}
+
+// apiErrorResponse represents the error response from GitHub API
+type apiErrorResponse struct {
+	Message string `json:"message"`
+}
+
+// parseAPIError converts GitHub API error responses into user-friendly messages
+func parseAPIError(statusCode int, body []byte) error {
+	var apiErr apiErrorResponse
+	_ = json.Unmarshal(body, &apiErr) // ignore unmarshal errors, we'll use fallback
+
+	switch statusCode {
+	case 401:
+		return fmt.Errorf("invalid or expired token. Please check your GitHub Personal Access Token")
+	case 403:
+		if apiErr.Message != "" {
+			return fmt.Errorf("access denied: %s", apiErr.Message)
+		}
+		return fmt.Errorf("access denied. Ensure your token has 'read:packages' and 'delete:packages' scopes")
+	case 404:
+		return fmt.Errorf("resource not found. The package or version may have been deleted")
+	case 422:
+		if apiErr.Message != "" {
+			return fmt.Errorf("request failed: %s", apiErr.Message)
+		}
+		return fmt.Errorf("invalid request. Please try again")
+	case 429:
+		return fmt.Errorf("rate limited. Please wait a moment and try again")
+	default:
+		if apiErr.Message != "" {
+			return fmt.Errorf("GitHub API error: %s", apiErr.Message)
+		}
+		return fmt.Errorf("GitHub API error (status %d)", statusCode)
+	}
 }

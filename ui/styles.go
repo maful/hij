@@ -6,7 +6,7 @@ import (
 
 var (
 	// Color palette
-	primaryColor   = lipgloss.Color("#7C3AED") // Purple
+	primaryColor   = lipgloss.Color("#60A5FA") // Soft blue
 	secondaryColor = lipgloss.Color("#06B6D4") // Cyan
 	successColor   = lipgloss.Color("#10B981") // Green
 	dangerColor    = lipgloss.Color("#EF4444") // Red
@@ -102,7 +102,7 @@ var (
 	LogoStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(primaryColor).
-			Background(lipgloss.Color("#2D1B69")).
+			Background(lipgloss.Color("#1E3A5F")).
 			Padding(0, 1)
 )
 

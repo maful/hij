@@ -41,14 +41,17 @@ func (m Model) handleDeleteResult(msg deleteResultMsg) (tea.Model, tea.Cmd) {
 	if m.deleteIdx >= len(m.selectedVersions) {
 		m.deleting = false
 		if len(m.deleteErrs) == 0 {
-			// Success - go back to packages
+			// Success - go back to versions with success message
+			deletedCount := len(m.selectedVersions)
 			m.selectedVersions = make(map[int]struct{})
-			m.screen = ScreenPackages
+			m.successMsg = fmt.Sprintf("Successfully deleted %d version(s)", deletedCount)
+			m.screen = ScreenVersions
 			m.loading = true
-			m.loadingMsg = "Refreshing packages..."
+			m.loadingMsg = "Refreshing versions..."
+			m.versionCursor = 0
 			return m, tea.Batch(
 				m.spinner.Tick,
-				m.fetchPackages(),
+				m.fetchVersions(),
 			)
 		}
 		// Stay on confirm screen showing errors

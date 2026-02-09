@@ -35,6 +35,9 @@ func (m Model) updateVersions(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		// Clear success message on any key press
+		m.successMsg = ""
+
 		switch msg.String() {
 		case "up", "k":
 			if m.versionCursor > 0 {
@@ -133,6 +136,11 @@ func (m Model) viewVersions() string {
 	if m.loading {
 		s += "  " + m.spinner.View() + " " + m.loadingMsg + "\n"
 		return s
+	}
+
+	// Show success message if present
+	if m.successMsg != "" {
+		s += "  " + SuccessStyle.Render("✓ "+m.successMsg) + "\n\n"
 	}
 
 	// Filter input

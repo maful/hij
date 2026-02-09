@@ -5,6 +5,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
+	"github.com/maful/hij/config"
 	"github.com/maful/hij/github"
 )
 
@@ -29,7 +30,10 @@ type Model struct {
 	quitting     bool
 
 	// Token screen
-	tokenInput textinput.Model
+	tokenInput       textinput.Model
+	pendingToken     string
+	tokenFromKeychain bool
+	showSavePrompt   bool
 
 	// Packages screen
 	packages       []github.Package
@@ -49,6 +53,9 @@ type Model struct {
 	deleting   bool
 	deleteIdx  int
 	deleteErrs []error
+
+	// Success message (shown after deletion)
+	successMsg string
 }
 
 // New creates a new application model
@@ -70,17 +77,31 @@ func New() Model {
 	s.Spinner = spinner.Dot
 	s.Style = SpinnerStyle
 
-	return Model{
+	m := Model{
 		screen:           ScreenToken,
 		tokenInput:       ti,
 		filterInput:      fi,
 		spinner:          s,
 		selectedVersions: make(map[int]struct{}),
 	}
+
+	// Check for existing token in env var or keychain
+	if token, source := config.GetToken(); token != "" {
+		m.client = github.NewClient(token)
+		m.pendingToken = token
+		m.tokenFromKeychain = (source == "keychain")
+		m.loading = true
+		m.loadingMsg = "Found token, validating..."
+	}
+
+	return m
 }
 
 // Init implements tea.Model
 func (m Model) Init() tea.Cmd {
+	if m.client != nil && m.loading {
+		return tea.Batch(textinput.Blink, m.spinner.Tick, m.fetchPackages())
+	}
 	return textinput.Blink
 }
 
@@ -119,6 +140,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.err = msg.err
 		return m, nil
 	case packagesMsg:
+		// Delegate to token screen to handle save prompt
+		if m.screen == ScreenToken {
+			return m.updateToken(msg)
+		}
 		m.loading = false
 		m.packages = msg.packages
 		m.screen = ScreenPackages

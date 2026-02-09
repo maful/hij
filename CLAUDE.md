@@ -16,6 +16,8 @@ A terminal user interface (TUI) for managing GitHub Packages. Delete container i
 ```
 hij/
 ├── main.go              # Entry point
+├── config/
+│   └── token.go         # Token storage (env var + keychain)
 ├── github/
 │   ├── client.go        # GitHub API client
 │   └── types.go         # Package & version types
@@ -34,6 +36,14 @@ hij/
 - **[Bubble Tea](https://github.com/charmbracelet/bubbletea)** — TUI framework (Elm architecture)
 - **[Bubbles](https://github.com/charmbracelet/bubbles)** — Input components (text input, spinner)
 - **[Lip Gloss](https://github.com/charmbracelet/lipgloss)** — Terminal styling
+- **[go-keyring](https://github.com/zalando/go-keyring)** — System keychain access
+
+## Token Storage
+
+**Priority order:**
+1. `HIJ_GITHUB_TOKEN` environment variable
+2. System keychain (macOS Keychain, Linux Secret Service, Windows Credential Manager)
+3. Manual input (with option to save to keychain)
 
 ## Key Commands
 
@@ -42,7 +52,8 @@ hij/
 go run .
 
 # Build
-go build -o hij
+make build
+# Output will be at ./build/hij
 ```
 
 ## Navigation
