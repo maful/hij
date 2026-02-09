@@ -1,4 +1,4 @@
-.PHONY: build run clean
+.PHONY: build run clean test
 
 BINARY_NAME=hij
 BUILD_DIR=build
@@ -12,3 +12,6 @@ run:
 
 clean:
 	rm -f $(BUILD_DIR)/$(BINARY_NAME)
+
+test:
+	go test -v ./...

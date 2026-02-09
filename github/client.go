@@ -8,12 +8,13 @@ import (
 	"time"
 )
 
-const baseURL = "https://api.github.com"
+const defaultBaseURL = "https://api.github.com"
 
 // Client is a GitHub API client for package operations
 type Client struct {
 	token      string
 	httpClient *http.Client
+	baseURL    string
 }
 
 // NewClient creates a new GitHub client with the given PAT
@@ -23,12 +24,13 @@ func NewClient(token string) *Client {
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
+		baseURL: defaultBaseURL,
 	}
 }
 
 // doRequest performs an authenticated request to GitHub API
 func (c *Client) doRequest(method, path string) ([]byte, error) {
-	req, err := http.NewRequest(method, baseURL+path, nil)
+	req, err := http.NewRequest(method, c.baseURL+path, nil)
 	if err != nil {
 		return nil, err
 	}
