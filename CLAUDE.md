@@ -2,6 +2,10 @@
 
 A terminal user interface (TUI) for managing GitHub Packages. Delete container image versions individually or in bulk with an intuitive, keyboard-driven interface.
 
+## Build Instructions
+
+**Always use `make` commands (`make build`, `make run`, `make clean`) instead of raw `go build`, `go run`, etc.**
+
 ## Overview
 
 **hij** connects to the GitHub Packages API using a Personal Access Token (PAT) and provides:
@@ -16,6 +20,7 @@ A terminal user interface (TUI) for managing GitHub Packages. Delete container i
 ```
 hij/
 ├── main.go              # Entry point
+├── Makefile             # Build targets (build, run, clean)
 ├── config/
 │   └── token.go         # Token storage (env var + keychain)
 ├── github/
@@ -49,11 +54,14 @@ hij/
 
 ```bash
 # Run
-go run .
+make run
 
 # Build
 make build
-# Output will be at ./build/hij
+# Output: ./build/hij
+
+# Clean build artifacts
+make clean
 ```
 
 ## Navigation
@@ -78,3 +86,7 @@ make build
 ## Required Permissions
 
 PAT needs `read:packages` and `delete:packages` scopes.
+
+## External Libraries
+
+Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
