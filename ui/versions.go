@@ -44,20 +44,20 @@ func (m Model) updateVersions(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.versionCursor--
 			}
 		case "down", "j":
-			if m.versionCursor < len(m.versions)-1 {
+			if m.versionCursor < len(m.filteredVersions)-1 {
 				m.versionCursor++
 			}
 		case " ": // Space to toggle selection
-			if len(m.versions) > 0 {
-				idx := m.versions[m.versionCursor].ID
+			if len(m.filteredVersions) > 0 {
+				idx := m.filteredVersions[m.versionCursor].ID
 				if _, ok := m.selectedVersions[idx]; ok {
 					delete(m.selectedVersions, idx)
 				} else {
 					m.selectedVersions[idx] = struct{}{}
 				}
 			}
-		case "a": // Select all
-			for _, v := range m.versions {
+		case "a": // Select all (filtered)
+			for _, v := range m.filteredVersions {
 				m.selectedVersions[v.ID] = struct{}{}
 			}
 		case "n": // Deselect all
@@ -67,8 +67,7 @@ func (m Model) updateVersions(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.filterInput.Focus()
 			return m, nil
 		case "c": // Clear filter
-			m.filterValue = ""
-			m.selectedVersions = make(map[int]struct{})
+			m.resetFilter()
 		case "d": // Delete selected
 			if len(m.selectedVersions) > 0 {
 				m.screen = ScreenConfirm
@@ -78,33 +77,50 @@ func (m Model) updateVersions(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.screen = ScreenPackages
 			m.selectedVersions = make(map[int]struct{})
 			m.filterValue = ""
+			m.filteredVersions = nil
 			return m, nil
 		}
 	}
 	return m, nil
 }
 
+// resetFilter clears the filter and restores all versions
+func (m *Model) resetFilter() {
+	m.filterValue = ""
+	m.filterInput.SetValue("")
+	m.filteredVersions = m.versions
+	m.selectedVersions = make(map[int]struct{})
+	m.versionCursor = 0
+}
+
 func (m *Model) applyFilter() {
 	filter := strings.TrimSpace(m.filterValue)
 	if filter == "" {
+		m.filteredVersions = m.versions
 		return
 	}
 
-	// Parse :older N format
-	olderRegex := regexp.MustCompile(`^:older\s+(\d+)$`)
+	// Reset filtered list and selections
+	m.filteredVersions = nil
+	m.selectedVersions = make(map[int]struct{})
+	m.versionCursor = 0
+
+	// Parse :older N format (colon is optional since : key activates filter mode)
+	olderRegex := regexp.MustCompile(`^:?older\s+(\d+)$`)
 	if matches := olderRegex.FindStringSubmatch(filter); len(matches) == 2 {
 		days, _ := strconv.Atoi(matches[1])
 		cutoff := time.Now().AddDate(0, 0, -days)
 		for _, v := range m.versions {
 			if v.CreatedAt.Before(cutoff) {
+				m.filteredVersions = append(m.filteredVersions, v)
 				m.selectedVersions[v.ID] = struct{}{}
 			}
 		}
 		return
 	}
 
-	// Parse :before DATE or :before DATETIME format
-	beforeRegex := regexp.MustCompile(`^:before\s+(.+)$`)
+	// Parse :before DATE or :before DATETIME format (colon is optional)
+	beforeRegex := regexp.MustCompile(`^:?before\s+(.+)$`)
 	if matches := beforeRegex.FindStringSubmatch(filter); len(matches) == 2 {
 		dateStr := matches[1]
 		var cutoff time.Time
@@ -120,12 +136,16 @@ func (m *Model) applyFilter() {
 		if err == nil {
 			for _, v := range m.versions {
 				if v.CreatedAt.Before(cutoff) {
+					m.filteredVersions = append(m.filteredVersions, v)
 					m.selectedVersions[v.ID] = struct{}{}
 				}
 			}
 		}
 		return
 	}
+
+	// If no filter pattern matched, show all versions
+	m.filteredVersions = m.versions
 }
 
 func (m Model) viewVersions() string {
@@ -150,31 +170,35 @@ func (m Model) viewVersions() string {
 		s += "  " + Muted("Filter: ") + TagStyle.Render(m.filterValue) + "\n\n"
 	}
 
-	if len(m.versions) == 0 {
-		s += "  " + Muted("No versions found.") + "\n"
-		s += "\n" + HelpStyle.Render("  esc: back • q: quit") + "\n"
+	if len(m.filteredVersions) == 0 {
+		if m.filterValue != "" {
+			s += "  " + Muted("No versions match the filter.") + "\n"
+		} else {
+			s += "  " + Muted("No versions found.") + "\n"
+		}
+		s += "\n" + HelpStyle.Render("  c: clear filter • esc: back • q: quit") + "\n"
 		return s
 	}
 
 	// Version list (show max 15)
 	start := 0
-	end := len(m.versions)
+	end := len(m.filteredVersions)
 	maxVisible := 15
 
-	if len(m.versions) > maxVisible {
+	if len(m.filteredVersions) > maxVisible {
 		start = m.versionCursor - maxVisible/2
 		if start < 0 {
 			start = 0
 		}
 		end = start + maxVisible
-		if end > len(m.versions) {
-			end = len(m.versions)
+		if end > len(m.filteredVersions) {
+			end = len(m.filteredVersions)
 			start = end - maxVisible
 		}
 	}
 
 	for i := start; i < end; i++ {
-		v := m.versions[i]
+		v := m.filteredVersions[i]
 		cursor := "  "
 		if m.versionCursor == i {
 			cursor = Cursor() + " "
@@ -210,13 +234,13 @@ func (m Model) viewVersions() string {
 	}
 
 	// Selection count
-	s += "\n  " + Muted(fmt.Sprintf("Selected: %d of %d", len(m.selectedVersions), len(m.versions))) + "\n"
+	s += "\n  " + Muted(fmt.Sprintf("Selected: %d of %d", len(m.selectedVersions), len(m.filteredVersions))) + "\n"
 
 	if m.err != nil {
 		s += "\n  " + ErrorStyle.Render("✗ "+m.err.Error()) + "\n"
 	}
 
-	s += "\n" + HelpStyle.Render("  space: toggle • a: all • n: none • /: filter • d: delete • esc: back") + "\n"
+	s += "\n" + HelpStyle.Render("  space: toggle • a: all • n: none • /: filter • c: clear • d: delete • esc: back") + "\n"
 
 	return s
 }

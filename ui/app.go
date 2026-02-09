@@ -41,12 +41,13 @@ type Model struct {
 	selectedPkg    *github.Package
 
 	// Versions screen
-	versions        []github.PackageVersion
-	versionCursor   int
-	selectedVersions map[int]struct{}
-	filterInput     textinput.Model
-	filterActive    bool
-	filterValue     string
+	versions          []github.PackageVersion
+	filteredVersions  []github.PackageVersion // versions after filter is applied
+	versionCursor     int
+	selectedVersions  map[int]struct{}
+	filterInput       textinput.Model
+	filterActive      bool
+	filterValue       string
 
 	// Confirm screen
 	confirmYes bool
@@ -151,6 +152,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case versionsMsg:
 		m.loading = false
 		m.versions = msg.versions
+		m.filteredVersions = msg.versions // Initially show all versions
 		m.screen = ScreenVersions
 		return m, nil
 	case deleteResultMsg:
