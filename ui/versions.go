@@ -145,7 +145,7 @@ func (m Model) viewVersions() string {
 
 	// Filter input
 	if m.filterActive {
-		s += "  " + FocusedInputStyle.Render(m.filterInput.View()) + "\n\n"
+		s += FocusedInputStyle.Render(m.filterInput.View()) + "\n\n"
 	} else if m.filterValue != "" {
 		s += "  " + Muted("Filter: ") + TagStyle.Render(m.filterValue) + "\n\n"
 	}

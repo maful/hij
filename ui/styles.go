@@ -86,13 +86,17 @@ var (
 	InputStyle = lipgloss.NewStyle().
 			Border(lipgloss.NormalBorder()).
 			BorderForeground(mutedColor).
-			Padding(0, 1)
+			Padding(0, 1).
+			Width(44).
+			MarginLeft(2)
 
 	// Focused input style
 	FocusedInputStyle = lipgloss.NewStyle().
 				Border(lipgloss.NormalBorder()).
 				BorderForeground(primaryColor).
-				Padding(0, 1)
+				Padding(0, 1).
+				Width(44).
+				MarginLeft(2)
 
 	// Spinner style
 	SpinnerStyle = lipgloss.NewStyle().
