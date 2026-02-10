@@ -6,6 +6,8 @@
 
 Built for developers who want to keep their GitHub container registries clean without wrestling with the web UI or complex `gh` CLI commands.
 
+https://github.com/user-attachments/assets/9114c8ff-1b20-423f-ae37-a3aa5d736bca
+
 ## ✨ Features
 
 - **🚀 Interactive Browsing**: List all container packages in your account instantly.
