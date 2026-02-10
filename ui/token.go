@@ -108,6 +108,16 @@ func (m Model) fetchPackages() tea.Cmd {
 		if err != nil {
 			return errMsg{err}
 		}
+
+		// Fetch version counts for each package since the API doesn't return them
+		for i, pkg := range packages {
+			versions, err := m.client.ListPackageVersions("container", pkg.Name)
+			if err != nil {
+				continue // Skip on error, leave count as 0
+			}
+			packages[i].VersionCount = len(versions)
+		}
+
 		return packagesMsg{packages}
 	}
 }

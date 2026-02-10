@@ -128,6 +128,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Go back
 			switch m.screen {
 			case ScreenVersions:
+				// Sync version count before going back
+				if m.selectedPkg != nil {
+					for i := range m.packages {
+						if m.packages[i].ID == m.selectedPkg.ID {
+							m.packages[i].VersionCount = len(m.versions)
+							break
+						}
+					}
+				}
 				m.screen = ScreenPackages
 				m.selectedVersions = make(map[int]struct{})
 				return m, nil
@@ -153,6 +162,15 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.loading = false
 		m.versions = msg.versions
 		m.filteredVersions = msg.versions // Initially show all versions
+		// Update the version count on the selected package
+		if m.selectedPkg != nil {
+			for i := range m.packages {
+				if m.packages[i].ID == m.selectedPkg.ID {
+					m.packages[i].VersionCount = len(msg.versions)
+					break
+				}
+			}
+		}
 		m.screen = ScreenVersions
 		return m, nil
 	case deleteResultMsg:
