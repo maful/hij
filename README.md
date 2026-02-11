@@ -18,6 +18,12 @@ https://github.com/user-attachments/assets/9114c8ff-1b20-423f-ae37-a3aa5d736bca
 
 ## 🚀 Installation
 
+### Automated Install (Recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/maful/hij/main/install.sh | bash
+```
+
 ### Using Go install
 
 ```bash
