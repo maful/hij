@@ -76,6 +76,14 @@ Inside the version list, press `:` to filter:
 - `:older <days>` — Select versions older than N days (e.g., `:older 10`).
 - `:before <date>` — Select versions before a date (e.g., `:before 2024-01-01`).
 
+### CLI Commands
+
+```bash
+hij                # Interactive menu (TUI)
+hij version        # Show installed version
+hij update         # Update to latest version
+```
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

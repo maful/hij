@@ -5,7 +5,8 @@ BUILD_DIR=build
 
 build:
 	@mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) .
+	@echo "Building $(BINARY_NAME)..."
+	@go build -ldflags "-s -w -X main.version=$$(git describe --tags --always --dirty) -X main.commit=$$(git rev-parse --short HEAD) -X main.date=$$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o $(BUILD_DIR)/$(BINARY_NAME) .
 
 run:
 	go run .
