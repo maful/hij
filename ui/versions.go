@@ -3,11 +3,13 @@ package ui
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/maful/hij/github"
 )
 
 func (m Model) updateVersions(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -68,6 +70,13 @@ func (m Model) updateVersions(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		case "c": // Clear filter
 			m.resetFilter()
+		case "s": // Toggle sort
+			if m.sortOrder == "newest" {
+				m.sortOrder = "oldest"
+			} else {
+				m.sortOrder = "newest"
+			}
+			m.sortVersions(m.filteredVersions)
 		case "d": // Delete selected
 			if len(m.selectedVersions) > 0 {
 				m.screen = ScreenConfirm
@@ -146,6 +155,16 @@ func (m *Model) applyFilter() {
 
 	// If no filter pattern matched, show all versions
 	m.filteredVersions = m.versions
+	m.sortVersions(m.filteredVersions)
+}
+
+func (m *Model) sortVersions(versions []github.PackageVersion) {
+	sort.Slice(versions, func(i, j int) bool {
+		if m.sortOrder == "oldest" {
+			return versions[i].CreatedAt.Before(versions[j].CreatedAt)
+		}
+		return versions[i].CreatedAt.After(versions[j].CreatedAt)
+	})
 }
 
 func (m Model) viewVersions() string {
@@ -167,8 +186,17 @@ func (m Model) viewVersions() string {
 	if m.filterActive {
 		s += FocusedInputStyle.Render(m.filterInput.View()) + "\n\n"
 	} else if m.filterValue != "" {
-		s += "  " + Muted("Filter: ") + TagStyle.Render(m.filterValue) + "\n\n"
+		s += "  " + Muted("Filter: ") + TagStyle.Render(m.filterValue) + "  "
+	} else {
+		s += "  "
 	}
+	
+	// Sort indicator
+	sortIcon := "↓"
+	if m.sortOrder == "oldest" {
+		sortIcon = "↑"
+	}
+	s += Muted("Sort: ") + TagStyle.Render(m.sortOrder+" "+sortIcon) + "\n\n"
 
 	if len(m.filteredVersions) == 0 {
 		if m.filterValue != "" {
@@ -240,7 +268,7 @@ func (m Model) viewVersions() string {
 		s += "\n  " + ErrorStyle.Render("✗ "+m.err.Error()) + "\n"
 	}
 
-	s += "\n" + HelpStyle.Render("  space: toggle • a: all • n: none • /: filter • c: clear • d: delete • esc: back") + "\n"
+	s += "\n" + HelpStyle.Render("  space: toggle • a: all • n: none • /: filter • s: sort • c: clear • d: delete • esc: back") + "\n"
 
 	return s
 }

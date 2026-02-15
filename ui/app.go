@@ -57,6 +57,9 @@ type Model struct {
 
 	// Success message (shown after deletion)
 	successMsg string
+
+	// Sorting
+	sortOrder string // "newest" or "oldest"
 }
 
 // New creates a new application model
@@ -84,6 +87,7 @@ func New() Model {
 		filterInput:      fi,
 		spinner:          s,
 		selectedVersions: make(map[int]struct{}),
+		sortOrder:        "newest",
 	}
 
 	// Check for existing token in env var or keychain
@@ -161,7 +165,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case versionsMsg:
 		m.loading = false
 		m.versions = msg.versions
-		m.filteredVersions = msg.versions // Initially show all versions
+		m.sortVersions(m.versions)    // Sort initially
+		m.filteredVersions = m.versions // Initially show all versions
 		// Update the version count on the selected package
 		if m.selectedPkg != nil {
 			for i := range m.packages {

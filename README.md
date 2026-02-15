@@ -11,6 +11,7 @@ https://github.com/user-attachments/assets/9114c8ff-1b20-423f-ae37-a3aa5d736bca
 ## ✨ Features
 
 - **🚀 Interactive Browsing**: List all container packages in your account instantly.
+- **🔃 Sort Versions**: Toggle between newest and oldest versions (`s`).
 - **🔍 Smart Filtering**: Select versions by age (e.g., `:older 30`) or specific dates (e.g., `:before 2024-01-01`).
 - **📦 Bulk Operations**: Toggle multiple versions or "Select All" for mass cleanup.
 - **🔐 Secure Token Management**: Leverages system keychain for secure storage of your Personal Access Token.
@@ -66,6 +67,7 @@ hij
 | `a` | Select all versions |
 | `n` | Deselect all versions |
 | `/` or `:` | Open filter input |
+| `s` | Toggle sort order (newest/oldest) |
 | `d` | Initiate deletion of selected versions |
 | `Esc` | Go back |
 | `q` | Quit |
