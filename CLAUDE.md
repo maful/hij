@@ -73,6 +73,7 @@ make clean
 | `a` | Select all |
 | `n` | Deselect all |
 | `/` or `:` | Open filter |
+| `s` | Toggle sort order |
 | `d` | Delete selected |
 | `Esc` | Back |
 | `q` | Quit |
