@@ -248,7 +248,6 @@ func (m Model) viewVersions() string {
 		tags := v.TagsString()
 
 		// Age
-		// Age
 		ageStr := HumanizeTime(v.CreatedAt)
 		if time.Since(v.CreatedAt) > 30*24*time.Hour {
 			ageStr = OldVersionStyle.Render(ageStr)
