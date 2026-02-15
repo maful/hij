@@ -190,7 +190,7 @@ func (m Model) viewVersions() string {
 	} else {
 		s += "  "
 	}
-	
+
 	// Sort indicator
 	sortIcon := "↓"
 	if m.sortOrder == "oldest" {
@@ -248,9 +248,8 @@ func (m Model) viewVersions() string {
 		tags := v.TagsString()
 
 		// Age
-		age := v.Age()
-		ageStr := fmt.Sprintf("%dd ago", age)
-		if age > 30 {
+		ageStr := HumanizeTime(v.CreatedAt)
+		if time.Since(v.CreatedAt) > 30*24*time.Hour {
 			ageStr = OldVersionStyle.Render(ageStr)
 		} else {
 			ageStr = DateStyle.Render(ageStr)

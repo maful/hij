@@ -55,8 +55,3 @@ func (v *PackageVersion) TagsString() string {
 	}
 	return result
 }
-
-// Age returns the age of the version in days
-func (v *PackageVersion) Age() int {
-	return int(time.Since(v.CreatedAt).Hours() / 24)
-}

@@ -205,57 +205,57 @@ func TestClient_ValidateToken(t *testing.T) {
 
 func TestParseAPIError(t *testing.T) {
 	tests := []struct {
-		name       string
-		statusCode int
-		body       string
+		name        string
+		statusCode  int
+		body        string
 		wantContain string
 	}{
 		{
-			name:       "401 unauthorized",
-			statusCode: 401,
-			body:       `{}`,
+			name:        "401 unauthorized",
+			statusCode:  401,
+			body:        `{}`,
 			wantContain: "invalid or expired token",
 		},
 		{
-			name:       "403 with message",
-			statusCode: 403,
-			body:       `{"message":"Resource protected"}`,
+			name:        "403 with message",
+			statusCode:  403,
+			body:        `{"message":"Resource protected"}`,
 			wantContain: "access denied: Resource protected",
 		},
 		{
-			name:       "403 without message",
-			statusCode: 403,
-			body:       `{}`,
+			name:        "403 without message",
+			statusCode:  403,
+			body:        `{}`,
 			wantContain: "read:packages",
 		},
 		{
-			name:       "404 not found",
-			statusCode: 404,
-			body:       `{}`,
+			name:        "404 not found",
+			statusCode:  404,
+			body:        `{}`,
 			wantContain: "resource not found",
 		},
 		{
-			name:       "422 with message",
-			statusCode: 422,
-			body:       `{"message":"Validation failed"}`,
+			name:        "422 with message",
+			statusCode:  422,
+			body:        `{"message":"Validation failed"}`,
 			wantContain: "request failed: Validation failed",
 		},
 		{
-			name:       "429 rate limited",
-			statusCode: 429,
-			body:       `{}`,
+			name:        "429 rate limited",
+			statusCode:  429,
+			body:        `{}`,
 			wantContain: "rate limited",
 		},
 		{
-			name:       "500 with message",
-			statusCode: 500,
-			body:       `{"message":"Internal error"}`,
+			name:        "500 with message",
+			statusCode:  500,
+			body:        `{"message":"Internal error"}`,
 			wantContain: "GitHub API error: Internal error",
 		},
 		{
-			name:       "500 without message",
-			statusCode: 500,
-			body:       `{}`,
+			name:        "500 without message",
+			statusCode:  500,
+			body:        `{}`,
 			wantContain: "status 500",
 		},
 	}

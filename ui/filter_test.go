@@ -12,19 +12,19 @@ import (
 func createTestVersions() []github.PackageVersion {
 	now := time.Now()
 	return []github.PackageVersion{
-		{ID: 1, Name: "v1", CreatedAt: now.Add(-5 * 24 * time.Hour)},   // 5 days old
-		{ID: 2, Name: "v2", CreatedAt: now.Add(-15 * 24 * time.Hour)},  // 15 days old
-		{ID: 3, Name: "v3", CreatedAt: now.Add(-30 * 24 * time.Hour)},  // 30 days old
-		{ID: 4, Name: "v4", CreatedAt: now.Add(-60 * 24 * time.Hour)},  // 60 days old
+		{ID: 1, Name: "v1", CreatedAt: now.Add(-5 * 24 * time.Hour)},  // 5 days old
+		{ID: 2, Name: "v2", CreatedAt: now.Add(-15 * 24 * time.Hour)}, // 15 days old
+		{ID: 3, Name: "v3", CreatedAt: now.Add(-30 * 24 * time.Hour)}, // 30 days old
+		{ID: 4, Name: "v4", CreatedAt: now.Add(-60 * 24 * time.Hour)}, // 60 days old
 	}
 }
 
 func TestModel_ApplyFilter_OlderN(t *testing.T) {
 	tests := []struct {
-		name           string
-		filter         string
-		expectedCount  int
-		expectedIDs    []int
+		name          string
+		filter        string
+		expectedCount int
+		expectedIDs   []int
 	}{
 		{
 			name:          "older 10 - filters versions older than 10 days",

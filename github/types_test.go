@@ -1,9 +1,6 @@
 package github
 
-import (
-	"testing"
-	"time"
-)
+import "testing"
 
 func TestPackageVersion_Tags(t *testing.T) {
 	tests := []struct {
@@ -12,8 +9,15 @@ func TestPackageVersion_Tags(t *testing.T) {
 		expected []string
 	}{
 		{
-			name:     "returns tags from metadata",
-			version:  PackageVersion{Metadata: struct{ PackageType string `json:"package_type"`; Container struct{ Tags []string `json:"tags"` } `json:"container"` }{Container: struct{ Tags []string `json:"tags"` }{Tags: []string{"v1.0", "latest"}}}},
+			name: "returns tags from metadata",
+			version: PackageVersion{Metadata: struct {
+				PackageType string `json:"package_type"`
+				Container   struct {
+					Tags []string `json:"tags"`
+				} `json:"container"`
+			}{Container: struct {
+				Tags []string `json:"tags"`
+			}{Tags: []string{"v1.0", "latest"}}}},
 			expected: []string{"v1.0", "latest"},
 		},
 		{
@@ -79,42 +83,6 @@ func TestPackageVersion_TagsString(t *testing.T) {
 			result := v.TagsString()
 			if result != tt.expected {
 				t.Errorf("TagsString() = %q, want %q", result, tt.expected)
-			}
-		})
-	}
-}
-
-func TestPackageVersion_Age(t *testing.T) {
-	tests := []struct {
-		name        string
-		createdDays int
-		expected    int
-	}{
-		{
-			name:        "created today",
-			createdDays: 0,
-			expected:    0,
-		},
-		{
-			name:        "created 10 days ago",
-			createdDays: 10,
-			expected:    10,
-		},
-		{
-			name:        "created 100 days ago",
-			createdDays: 100,
-			expected:    100,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			v := &PackageVersion{
-				CreatedAt: time.Now().Add(-time.Duration(tt.createdDays) * 24 * time.Hour),
-			}
-			result := v.Age()
-			if result != tt.expected {
-				t.Errorf("Age() = %d, want %d", result, tt.expected)
 			}
 		})
 	}
