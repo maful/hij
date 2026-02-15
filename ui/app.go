@@ -21,33 +21,33 @@ const (
 
 // Model is the main application model
 type Model struct {
-	screen       Screen
-	client       *github.Client
-	err          error
-	loading      bool
-	loadingMsg   string
-	spinner      spinner.Model
-	quitting     bool
+	screen     Screen
+	client     *github.Client
+	err        error
+	loading    bool
+	loadingMsg string
+	spinner    spinner.Model
+	quitting   bool
 
 	// Token screen
-	tokenInput       textinput.Model
-	pendingToken     string
+	tokenInput        textinput.Model
+	pendingToken      string
 	tokenFromKeychain bool
-	showSavePrompt   bool
+	showSavePrompt    bool
 
 	// Packages screen
-	packages       []github.Package
-	packageCursor  int
-	selectedPkg    *github.Package
+	packages      []github.Package
+	packageCursor int
+	selectedPkg   *github.Package
 
 	// Versions screen
-	versions          []github.PackageVersion
-	filteredVersions  []github.PackageVersion // versions after filter is applied
-	versionCursor     int
-	selectedVersions  map[int]struct{}
-	filterInput       textinput.Model
-	filterActive      bool
-	filterValue       string
+	versions         []github.PackageVersion
+	filteredVersions []github.PackageVersion // versions after filter is applied
+	versionCursor    int
+	selectedVersions map[int]struct{}
+	filterInput      textinput.Model
+	filterActive     bool
+	filterValue      string
 
 	// Confirm screen
 	confirmYes bool
@@ -165,7 +165,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case versionsMsg:
 		m.loading = false
 		m.versions = msg.versions
-		m.sortVersions(m.versions)    // Sort initially
+		m.sortVersions(m.versions)      // Sort initially
 		m.filteredVersions = m.versions // Initially show all versions
 		// Update the version count on the selected package
 		if m.selectedPkg != nil {

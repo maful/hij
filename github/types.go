@@ -55,5 +55,3 @@ func (v *PackageVersion) TagsString() string {
 	}
 	return result
 }
-
-

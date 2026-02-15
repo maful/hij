@@ -11,7 +11,7 @@ import (
 
 // tokenValidatedMsg is sent when token validation succeeds
 type tokenValidatedMsg struct {
-	token       string
+	token        string
 	fromKeychain bool
 }
 

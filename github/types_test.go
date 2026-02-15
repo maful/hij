@@ -9,8 +9,15 @@ func TestPackageVersion_Tags(t *testing.T) {
 		expected []string
 	}{
 		{
-			name:     "returns tags from metadata",
-			version:  PackageVersion{Metadata: struct{ PackageType string `json:"package_type"`; Container struct{ Tags []string `json:"tags"` } `json:"container"` }{Container: struct{ Tags []string `json:"tags"` }{Tags: []string{"v1.0", "latest"}}}},
+			name: "returns tags from metadata",
+			version: PackageVersion{Metadata: struct {
+				PackageType string `json:"package_type"`
+				Container   struct {
+					Tags []string `json:"tags"`
+				} `json:"container"`
+			}{Container: struct {
+				Tags []string `json:"tags"`
+			}{Tags: []string{"v1.0", "latest"}}}},
 			expected: []string{"v1.0", "latest"},
 		},
 		{
@@ -80,5 +87,3 @@ func TestPackageVersion_TagsString(t *testing.T) {
 		})
 	}
 }
-
-

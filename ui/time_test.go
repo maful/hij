@@ -9,13 +9,13 @@ import (
 func TestHumanizeTime(t *testing.T) {
 	// Fix "now" for testing purposes requires mocking time.Now() which is hard in Go without a library or interface.
 	// Instead, we derive input times from time.Now() relative to the test execution time.
-	
+
 	now := time.Now()
 
 	tests := []struct {
 		name     string
 		input    time.Time
-		expected string // We might need flexible matching for "seconds ago" if test runs slow
+		expected string            // We might need flexible matching for "seconds ago" if test runs slow
 		check    func(string) bool // Custom check function if strict equality is brittle
 	}{
 		{
@@ -87,7 +87,7 @@ func TestHumanizeTime(t *testing.T) {
 					// Too close to now, might fall into "This week" or "Yesterday"
 					// Skip this test case dynamically if we are early in the year?
 					// Let's skip strict check if we assume the logic assumes > 7 days.
-					return true 
+					return true
 				}
 				return s == "on Jan 01"
 			},
@@ -95,10 +95,10 @@ func TestHumanizeTime(t *testing.T) {
 		// Case for "This year" that is definitely > 7 days ago.
 		// If current date is < Jan 8th, we can't test "This year > 7 days ago" easily without mocking "now".
 		// But let's assume standard case.
-		
+
 		{
-			name:     "Last year",
-			input:    now.AddDate(-1, 0, 0), // Exactly 1 year ago
+			name:  "Last year",
+			input: now.AddDate(-1, 0, 0), // Exactly 1 year ago
 			check: func(s string) bool {
 				target := now.AddDate(-1, 0, 0)
 				// "on Jan 31, 2012"

@@ -190,7 +190,7 @@ func (m Model) viewVersions() string {
 	} else {
 		s += "  "
 	}
-	
+
 	// Sort indicator
 	sortIcon := "↓"
 	if m.sortOrder == "oldest" {
