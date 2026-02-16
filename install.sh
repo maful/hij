@@ -43,8 +43,8 @@ case "$ARCH" in
 esac
 
 case "$OS" in
-    linux) OS="Linux" ;;
-    darwin) OS="Darwin" ;;
+    linux) OS="linux" ;;
+    darwin) OS="darwin" ;;
     *) log_error "Unsupported OS: $OS"; exit 1 ;;
 esac
 
@@ -91,11 +91,23 @@ if [ ! -f "$TMP_DIR/$BIN_NAME" ]; then
 fi
 
 INSTALL_DIR="/usr/local/bin"
+
+# check if we can install to a user-writable directory in the PATH
+for dir in "$HOME/.local/bin" "$HOME/bin"; do
+    if [[ ":$PATH:" == *":$dir:"* ]] && [ -d "$dir" ] && [ -w "$dir" ]; then
+        INSTALL_DIR="$dir"
+        break
+    fi
+done
+
 log_info "Installing to $INSTALL_DIR..."
 
 if [ -w "$INSTALL_DIR" ]; then
     mv "$TMP_DIR/$BIN_NAME" "$INSTALL_DIR/$BIN_NAME"
 else
+    if [ "$INSTALL_DIR" == "/usr/local/bin" ]; then
+        log_info "Sudo is required to install to $INSTALL_DIR"
+    fi
     sudo mv "$TMP_DIR/$BIN_NAME" "$INSTALL_DIR/$BIN_NAME"
 fi
 
