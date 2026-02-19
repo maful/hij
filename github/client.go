@@ -39,6 +39,7 @@ func (c *Client) doRequest(method, path string) ([]byte, error) {
 	req.Header.Set("Accept", "application/vnd.github+json")
 	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
 
+	// #nosec G704 -- The baseURL is configured within the client and path is constructed from API methods.
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err

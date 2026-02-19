@@ -42,7 +42,9 @@ func Update(currentVersion string) {
 	fmt.Print(infoStyle.Render("Do you want to update? (y/n): "))
 
 	var input string
-	fmt.Scanln(&input)
+	if _, err := fmt.Scanln(&input); err != nil {
+		// Ignore error and assume no/cancel
+	}
 	if input != "y" && input != "Y" {
 		fmt.Println(infoStyle.Render("Update cancelled."))
 		return
